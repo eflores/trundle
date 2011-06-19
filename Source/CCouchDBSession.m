@@ -25,9 +25,6 @@
 	{
 	[operationQueue cancelAllOperations];
 	[operationQueue waitUntilAllOperationsAreFinished];
-	//
-	//
-	//
 	}
 
 #pragma mark -

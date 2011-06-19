@@ -14,11 +14,9 @@
 @class CURLOperation;
 
 @interface CCouchDBDesignDocument : NSObject {
-    CCouchDBDatabase *__unsafe_unretained database;
-    NSString *identifier;
 }
 
-@property (readonly, nonatomic, assign) CCouchDBDatabase *database;
+@property (readonly, nonatomic, weak) CCouchDBDatabase *database;
 @property (readonly, nonatomic, retain) NSString *identifier;
 @property (readonly, nonatomic, retain) NSURL *URL;
 

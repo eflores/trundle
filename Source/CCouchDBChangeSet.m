@@ -37,12 +37,6 @@
 	return(self);
 	}
 	
-- (void)dealloc
-	{
-	database = NULL;
-	//
-	}
-
 #pragma mark -
 
 - (NSString *)description

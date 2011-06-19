@@ -14,7 +14,7 @@
 #import "CCouchDBSession.h"
 
 @interface CCouchDBURLOperation ()
-@property (readwrite, nonatomic, assign) CCouchDBSession *session;
+@property (readwrite, nonatomic, weak) CCouchDBSession *session;
 @end
 
 #pragma mark -
@@ -35,24 +35,7 @@
 	return(self);
 	}
 
-- (void)dealloc
-	{
-	session = NULL;
-
-	successHandler = NULL;
-
-	failureHandler = NULL;
-
-	//
-	}
-
 #pragma mark -
-
-- (void)start
-	{
-	[super start];
-	//
-	}
 
 - (void)didFinish
 	{

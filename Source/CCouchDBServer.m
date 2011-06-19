@@ -112,7 +112,7 @@
 		{
 		if ([inURL.scheme isEqualToString:@"http"] == YES)
 			{
-			NSLog(@"Warning: Using basic auth over non-https connections is a bad idea.");
+			LogOnce_(LoggingLevel_WARNING, @"Using basic auth over non-https connections is a bad idea.");
 			}
 		
 		NSString *theValue = [NSString stringWithFormat:@"%@:%@", self.URLCredential.user, self.URLCredential.password];
@@ -152,23 +152,26 @@
 	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
 	theRequest.HTTPMethod = @"GET";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
+    __block CCouchDBServer *_self = self;
 	CCouchDBURLOperation *theOperation = [self.session URLOperationWithRequest:theRequest];
 	theOperation.successHandler = ^(id inParameter) {
-		[self willChangeValueForKey:@"databases"];
+		[_self willChangeValueForKey:@"databases"];
 		for (NSString *theName in inParameter)
 			{
-			if ([self.databasesByName objectForKey:theName] == NULL)
+			if ([_self.databasesByName objectForKey:theName] == NULL)
 				{
-				CCouchDBDatabase *theDatabase = [[CCouchDBDatabase alloc] initWithServer:self name:theName];
-				[self willChangeValueForKey:@"databasesByName"];
-				[self.databasesByName setObject:theDatabase forKey:theName];
-				[self didChangeValueForKey:@"databasesByName"];
+				CCouchDBDatabase *theDatabase = [[CCouchDBDatabase alloc] initWithServer:_self name:theName];
+				[_self willChangeValueForKey:@"databasesByName"];
+				[_self.databasesByName setObject:theDatabase forKey:theName];
+				[_self didChangeValueForKey:@"databasesByName"];
 				}
 			}
-		[self didChangeValueForKey:@"databases"];
+		[_self didChangeValueForKey:@"databases"];
 
 		if (inSuccessHandler)
-			inSuccessHandler([self.databasesByName allValues]);
+			inSuccessHandler([_self.databasesByName allValues]);
+
+        _self = NULL;
 		};
 	theOperation.failureHandler = inFailureHandler;
 
@@ -182,14 +185,17 @@
 	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
 	theRequest.HTTPMethod = @"GET";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
+    __block CCouchDBServer *_self = self;
 	CCouchDBURLOperation *theOperation = [self.session URLOperationWithRequest:theRequest];
 	theOperation.successHandler = ^(id inParameter) {
-		[self willChangeValueForKey:@"databasesByName"];
-		[self.databasesByName setObject:theRemoteDatabase forKey:inName];
-		[self didChangeValueForKey:@"databasesByName"];
+		[_self willChangeValueForKey:@"databasesByName"];
+		[_self.databasesByName setObject:theRemoteDatabase forKey:inName];
+		[_self didChangeValueForKey:@"databasesByName"];
 
 		if (inSuccessHandler)
 			inSuccessHandler(theRemoteDatabase);
+
+        _self = NULL;
 		};
 	theOperation.failureHandler = inFailureHandler;
 	return(theOperation);
@@ -201,14 +207,17 @@
 	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
 	theRequest.HTTPMethod = @"DELETE";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
+    __block CCouchDBServer *_self = self;
 	CCouchDBURLOperation *theOperation = [self.session URLOperationWithRequest:theRequest];
 	theOperation.successHandler = ^(id inParameter) {
-		[self willChangeValueForKey:@"databasesByName"];
-		[self.databasesByName removeObjectForKey:inDatabase.name];
-		[self didChangeValueForKey:@"databasesByName"];
+		[_self willChangeValueForKey:@"databasesByName"];
+		[_self.databasesByName removeObjectForKey:inDatabase.name];
+		[_self didChangeValueForKey:@"databasesByName"];
 
 		if (inSuccessHandler)
 			inSuccessHandler(inDatabase);
+
+        _self = NULL;
 		};
 	theOperation.failureHandler = inFailureHandler;
 	return(theOperation);

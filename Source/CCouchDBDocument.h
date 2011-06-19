@@ -12,13 +12,9 @@
 @class CCouchDBDatabase;
 
 @interface CCouchDBDocument : NSObject /*<NSDiscardableContent>*/ {
-	CCouchDBDatabase *__unsafe_unretained database;
-	NSString *identifier;
-	NSString *revision;
-	NSDictionary *content;
 }
 
-@property (readonly, assign) CCouchDBDatabase *database;
+@property (readonly, weak) CCouchDBDatabase *database;
 @property (readwrite, copy) NSString *identifier;
 @property (readwrite, copy) NSString *revision;
 @property (readonly, copy) NSString *encodedIdentifier;

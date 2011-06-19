@@ -16,14 +16,13 @@
 @class CCouchDBDesignDocument;
 
 @interface CCouchDBDatabase : NSObject {
-	CCouchDBServer *__unsafe_unretained server;
 	NSString *name;
 	NSString *encodedName;
 	NSURL *URL;
 	NSMutableDictionary *designDocuments;
 }
 
-@property (readonly, assign) CCouchDBServer *server;
+@property (readonly, weak) CCouchDBServer *server;
 @property (readonly, copy) NSString *name;
 @property (readonly, copy) NSString *encodedName;
 @property (readonly, copy) NSURL *URL;

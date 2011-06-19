@@ -11,13 +11,9 @@
 @class CCouchDBDocument;
 
 @interface CCouchDBAttachment : NSObject {
-    CCouchDBDocument *__unsafe_unretained document;
-    NSString *identifier;
-	NSString *contentType;
-	NSData *data;
 }
 
-@property (readwrite, nonatomic, assign) CCouchDBDocument *document;
+@property (readwrite, nonatomic, weak) CCouchDBDocument *document;
 @property (readwrite, nonatomic, retain) NSString *identifier;
 @property (readwrite, nonatomic, retain) NSString *contentType;
 @property (readwrite, nonatomic, retain) NSData *data;

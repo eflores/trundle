@@ -75,14 +75,6 @@ if ((self = [self initWithDatabase:inDatabase]) != NULL)
 return(self);
 }
 
-- (void)dealloc
-    {
-    database = NULL;
-    identifier = NULL;
-    revision = NULL;
-    //
-    }
-
 #pragma mark -
 
 - (NSString *)description

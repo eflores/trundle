@@ -13,10 +13,6 @@
 @class CCouchDBSession;
 
 @interface CCouchDBURLOperation : CURLOperation {
-    CCouchDBSession *__unsafe_unretained session;
-	id JSON;
-    CouchDBSuccessHandler successHandler;
-    CouchDBFailureHandler failureHandler;
 }
 
 @property (readwrite, nonatomic, retain) id JSON;

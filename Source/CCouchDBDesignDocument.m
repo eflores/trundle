@@ -38,13 +38,6 @@
     return(self);
     }
 
-- (void)dealloc
-    {
-    database = NULL;
-
-    //
-    }
-
 #pragma mark -
 
 - (NSURL *)URL

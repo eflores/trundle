@@ -13,6 +13,7 @@
 #import "NSDate_InternetDateExtensions.h"
 #import "CJSONDeserializer.h"
 #import "CJSONSerializedData.h"
+#import "NSData_Base64Extensions.h"
 
 @implementation CCouchDBSession
 
@@ -20,6 +21,29 @@
 @synthesize URLOperationClass;
 @synthesize serializer;
 @synthesize deserializer;
+@synthesize URLCredential;
+@synthesize defaultFailureHandler;
+
+static CCouchDBSession *gSharedInstance = NULL;
+
++ (CCouchDBSession *)defaultSession
+    {
+    static dispatch_once_t sOnceToken = 0;
+    dispatch_once(&sOnceToken, ^{
+        gSharedInstance = [[CCouchDBSession alloc] init];
+        });
+    return(gSharedInstance);
+    }
+    
+- (id)init
+	{
+	if ((self = [super init]) != NULL)
+		{
+        defaultFailureHandler = (id)^(NSError *inError) { [[CLogging sharedInstance] logError:inError]; };
+		}
+	return(self);
+	}
+
 
 - (void)dealloc
 	{
@@ -78,9 +102,23 @@
 
 #pragma mark -
 
-- (NSMutableURLRequest *)requestWithURL:(NSURL *)inURL
+- (NSMutableURLRequest *)requestWithURL:(NSURL *)inURL;
 	{
 	NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:inURL];
+	
+	if (self.URLCredential)
+		{
+		if ([inURL.scheme isEqualToString:@"http"] == YES)
+			{
+			LogOnce_(LoggingLevel_WARNING, @"Using basic auth over non-https connections is a bad idea.");
+			}
+		
+		NSString *theValue = [NSString stringWithFormat:@"%@:%@", self.URLCredential.user, self.URLCredential.password];
+		NSData *theData = [theValue dataUsingEncoding:NSUTF8StringEncoding];
+		theValue = [theData asBase64EncodedString:0];
+		theValue = [NSString stringWithFormat:@"Basic %@", theValue];
+		[theRequest setValue:theValue forHTTPHeaderField:@"Authorization"];
+		}
 	return(theRequest);
 	}
 

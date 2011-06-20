@@ -15,15 +15,20 @@
 @synthesize offset;
 @synthesize rows;
 
--(void)dealloc {
-    [rows release];
-    rows = NULL;
-    [super dealloc];
-}
+- (id)initWithTotalRows:(NSInteger)inTotalRows offset:(NSInteger)inOffset rows:(NSArray *)inRows;
+	{
+	if ((self = [super init]) != NULL)
+		{
+        totalRows = inTotalRows;
+        offset = inOffset;
+        rows = inRows;
+		}
+	return(self);
+	}
 
 - (NSString *)description
-{
+    {
     return([NSString stringWithFormat:@"%@ (totalRows:%d offset:%d rows:%@ )", [super description], self.totalRows, self.offset, self.rows]);
-}
+    }
 
 @end

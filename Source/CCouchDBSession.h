@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "CouchDBClientTypes.h"
+
 @class CJSONSerializer;
 @class CJSONDeserializer;
 
@@ -19,6 +21,10 @@
 @property (readwrite, nonatomic, assign) Class URLOperationClass;
 @property (readwrite, nonatomic, retain) CJSONSerializer *serializer;
 @property (readwrite, nonatomic, retain) CJSONDeserializer *deserializer;
+@property (readwrite, nonatomic, retain) NSURLCredential *URLCredential;
+@property (readwrite, nonatomic, copy) CouchDBFailureHandler defaultFailureHandler;
+
++ (CCouchDBSession *)defaultSession;
 
 - (NSMutableURLRequest *)requestWithURL:(NSURL *)inURL;
 - (id)URLOperationWithRequest:(NSURLRequest *)inURLRequest;

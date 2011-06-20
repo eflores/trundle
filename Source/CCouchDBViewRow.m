@@ -8,26 +8,26 @@
 
 #import "CCouchDBViewRow.h"
 
-
 @implementation CCouchDBViewRow
 
 @synthesize key;
 @synthesize value;
-@synthesize doc;
+@synthesize document;
 
-- (void)dealloc {
-    [key release];
-    key = NULL;
-    [value release];
-    value = NULL;
-    [doc release];
-    doc = NULL;
-    [super dealloc];
-}
+- (id)initWithKey:(id)inKey value:(id)inValue document:(CCouchDBDocument *)inDocument;
+	{
+	if ((self = [super init]) != NULL)
+		{
+        key = inKey;
+        value = inValue;
+        document = inDocument;
+		}
+	return(self);
+	}
 
 - (NSString *)description
-{
-    return([NSString stringWithFormat:@"%@ (key:%@ value:%@ doc:%@ )", [super description], self.key, self.value, self.doc]);
-}
+    {
+    return([NSString stringWithFormat:@"%@ (key:%@ value:%@ doc:%@ )", [super description], self.key, self.value, self.document]);
+    }
 
 @end

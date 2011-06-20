@@ -68,49 +68,36 @@
         theURL = [NSURL URLWithRoot:theURL queryDictionary:inOptions];
         }
 
-    NSMutableURLRequest *theRequest = [self.server requestWithURL:theURL];
+    NSMutableURLRequest *theRequest = [self.session requestWithURL:theURL];
     theRequest.HTTPMethod = @"GET";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
     CCouchDBURLOperation *theOperation = [self.session URLOperationWithRequest:theRequest];
     theOperation.successHandler = ^(id inParameter) {
-        CCouchDBView *theView = [[CCouchDBView alloc] init];
-        [theView setTotalRows:[(NSNumber *)[inParameter objectForKey:@"total_rows"] intValue]];
-        [theView setOffset:[(NSNumber *)[inParameter objectForKey:@"offset"] intValue]];        
 		NSMutableArray *theViewRows = [NSMutableArray array];
 		for (NSDictionary *theRow in [inParameter objectForKey:@"rows"])
-        {
-            CCouchDBViewRow *viewRow = [[[CCouchDBViewRow alloc] init] autorelease];
+            {
             id key = [theRow objectForKey:@"key"];
-            if(key)
-            {
-                [viewRow setKey:key];
-            }
             id value = [theRow objectForKey:@"value"];
-            if(value) 
-            {
-                [viewRow setValue:value];
-            }
-            
 			NSDictionary *doc = [theRow objectForKey:@"doc"];
+            CCouchDBDocument *theDocument = NULL;
 			if (doc)
-            {
-				CCouchDBDocument *theDocument = [[[CCouchDBDocument alloc] initWithDatabase:database] autorelease];
+                {
+				theDocument = [[CCouchDBDocument alloc] initWithDatabase:database];
 				[theDocument populateWithJSON:doc];
-                
-				[viewRow setDoc:theDocument];
-            }
+                }
 			else
-            {
+                {
 				NSString *theIdentifier = [theRow objectForKey:@"id"];
-                
-				CCouchDBDocument *theDocument = [[[CCouchDBDocument alloc] initWithDatabase:database identifier:theIdentifier] autorelease];
-                
-				[viewRow setDoc:theDocument];
-            }
+				theDocument = [[CCouchDBDocument alloc] initWithDatabase:database identifier:theIdentifier];
+                }
+            CCouchDBViewRow *viewRow = [[CCouchDBViewRow alloc] initWithKey:key value:value document:theDocument];
             [theViewRows addObject:viewRow];
-        }
+            }
         
-        [theView setRows:theViewRows];        
+        NSInteger theTotalRows = [[inParameter objectForKey:@"total_rows"] integerValue];
+        NSInteger theOffset = [[inParameter objectForKey:@"offset"] integerValue];        
+        CCouchDBView *theView = [[CCouchDBView alloc] initWithTotalRows:theTotalRows offset:theOffset rows:theViewRows];
+
         if (inSuccessHandler)
 			inSuccessHandler(theView);
     };

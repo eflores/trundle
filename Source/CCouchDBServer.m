@@ -26,7 +26,6 @@
 
 @synthesize session;
 @synthesize URL;
-@synthesize URLCredential;
 @synthesize databasesByName;
 
 + (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key
@@ -71,7 +70,7 @@
 	{
 	if (session == NULL)
 		{
-		session = [[CCouchDBSession alloc] init];
+		session = [CCouchDBSession defaultSession];
 		}
 	return(session);
 	}
@@ -104,33 +103,13 @@
 	return(theDatabase);
 	}
 	
-- (NSMutableURLRequest *)requestWithURL:(NSURL *)inURL;
-	{
-	NSMutableURLRequest *theRequest = [self.session requestWithURL:inURL];
-	
-	if (self.URLCredential)
-		{
-		if ([inURL.scheme isEqualToString:@"http"] == YES)
-			{
-			LogOnce_(LoggingLevel_WARNING, @"Using basic auth over non-https connections is a bad idea.");
-			}
-		
-		NSString *theValue = [NSString stringWithFormat:@"%@:%@", self.URLCredential.user, self.URLCredential.password];
-		NSData *theData = [theValue dataUsingEncoding:NSUTF8StringEncoding];
-		theValue = [theData asBase64EncodedString:0];
-		theValue = [NSString stringWithFormat:@"Basic %@", theValue];
-		[theRequest setValue:theValue forHTTPHeaderField:@"Authorization"];
-		}
-	return(theRequest);
-	}
-
 #pragma mark -
 
 - (CURLOperation *)operationToCreateDatabaseNamed:(NSString *)inName withSuccessHandler:(CouchDBSuccessHandler)inSuccessHandler failureHandler:(CouchDBFailureHandler)inFailureHandler;
 	{
 	CCouchDBDatabase *theRemoteDatabase = [[CCouchDBDatabase alloc] initWithServer:self name:inName];
 	NSURL *theURL = [self.URL URLByAppendingPathComponent:theRemoteDatabase.encodedName];
-	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
+	NSMutableURLRequest *theRequest = [self.session requestWithURL:theURL];
 	theRequest.HTTPMethod = @"PUT";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
 	CCouchDBURLOperation *theOperation = [self.session URLOperationWithRequest:theRequest];
@@ -149,7 +128,7 @@
 - (CURLOperation *)operationToFetchDatabasesWithSuccessHandler:(CouchDBSuccessHandler)inSuccessHandler failureHandler:(CouchDBFailureHandler)inFailureHandler
 	{
 	NSURL *theURL = [self.URL URLByAppendingPathComponent:@"_all_dbs"];
-	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
+	NSMutableURLRequest *theRequest = [self.session requestWithURL:theURL];
 	theRequest.HTTPMethod = @"GET";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
     __block CCouchDBServer *_self = self;
@@ -182,7 +161,7 @@
 	{
 	CCouchDBDatabase *theRemoteDatabase = [[CCouchDBDatabase alloc] initWithServer:self name:inName];
 	NSURL *theURL = [self.URL URLByAppendingPathComponent:theRemoteDatabase.encodedName];
-	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
+	NSMutableURLRequest *theRequest = [self.session requestWithURL:theURL];
 	theRequest.HTTPMethod = @"GET";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
     __block CCouchDBServer *_self = self;
@@ -204,7 +183,7 @@
 - (CURLOperation *)operationToDeleteDatabase:(CCouchDBDatabase *)inDatabase withSuccessHandler:(CouchDBSuccessHandler)inSuccessHandler failureHandler:(CouchDBFailureHandler)inFailureHandler;
 	{
 	NSURL *theURL = [self.URL URLByAppendingPathComponent:inDatabase.encodedName];
-	NSMutableURLRequest *theRequest = [self requestWithURL:theURL];
+	NSMutableURLRequest *theRequest = [self.session requestWithURL:theURL];
 	theRequest.HTTPMethod = @"DELETE";
 	[theRequest setValue:kContentTypeJSON forHTTPHeaderField:@"Accept"];
     __block CCouchDBServer *_self = self;

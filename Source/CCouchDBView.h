@@ -13,9 +13,10 @@
     
 }
 
-@property (nonatomic, assign) NSInteger totalRows;
-@property (nonatomic, assign) NSInteger offset;
-@property (nonatomic, retain) NSMutableArray *rows;
+@property (readonly, nonatomic, assign) NSInteger totalRows;
+@property (readonly, nonatomic, assign) NSInteger offset;
+@property (readonly, nonatomic, retain) NSArray *rows;
 
+- (id)initWithTotalRows:(NSInteger)inTotalRows offset:(NSInteger)inOffset rows:(NSArray *)inRows;
 
 @end

@@ -14,20 +14,19 @@
 @class CCouchDBDocument;
 @class CURLOperation;
 @class CCouchDBDesignDocument;
+@class CCouchDBSession;
 
 @interface CCouchDBDatabase : NSObject {
-	NSString *name;
-	NSString *encodedName;
-	NSURL *URL;
-	NSMutableDictionary *designDocuments;
 }
 
+@property (readonly, retain) CCouchDBSession *session;
 @property (readonly, weak) CCouchDBServer *server;
 @property (readonly, copy) NSString *name;
 @property (readonly, copy) NSString *encodedName;
 @property (readonly, copy) NSURL *URL;
 
 - (id)initWithServer:(CCouchDBServer *)inServer name:(NSString *)inName;
+- (id)initWithURL:(NSURL *)inURL;
 
 - (CCouchDBDesignDocument *)designDocumentNamed:(NSString *)inName;
 

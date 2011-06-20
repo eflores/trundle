@@ -14,8 +14,10 @@
     
 }
 
-@property (nonatomic, retain) id key;
-@property (nonatomic, retain) id value;
-@property (nonatomic, retain) CCouchDBDocument *doc;
+@property (readonly, nonatomic, retain) id key;
+@property (readonly, nonatomic, retain) id value;
+@property (readonly, nonatomic, retain) CCouchDBDocument *document;
+
+- (id)initWithKey:(id)inKey value:(id)inValue document:(CCouchDBDocument *)inDocument;
 
 @end

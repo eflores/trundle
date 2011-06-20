@@ -17,6 +17,8 @@
 #import "NSURL_Extensions.h"
 #import "CCouchDBChangeSet.h"
 #import "CCouchDBDesignDocument.h"
+#import "CCouchDBView.h"
+#import "CCouchDBViewRow.h"
 
 @interface CCouchDBDatabase ()
 @property (readonly, retain) NSMutableDictionary *designDocuments;
@@ -375,16 +377,31 @@
     __block CCouchDBDatabase *_self = self;
 	CCouchDBURLOperation *theOperation = [self.session URLOperationWithRequest:theRequest];
 	theOperation.successHandler = ^(id inParameter) {
-		NSMutableArray *theDocuments = [NSMutableArray array];
+        CCouchDBView *theView = [[CCouchDBView alloc] init];
+        [theView setTotalRows:[(NSNumber *)[inParameter objectForKey:@"total_rows"] intValue]];
+        [theView setOffset:[(NSNumber *)[inParameter objectForKey:@"offset"] intValue]];        
+		NSMutableArray *theViewRows = [NSMutableArray array];
 		for (NSDictionary *theRow in [inParameter objectForKey:@"rows"])
 			{
+            CCouchDBViewRow *viewRow = [[[CCouchDBViewRow alloc] init] autorelease];
+            id key = [theRow objectForKey:@"key"];
+            if(key)
+                {
+                [viewRow setKey:key];
+                }
+            id value = [theRow objectForKey:@"value"];
+            if(value) 
+                {
+                [viewRow setValue:value];
+                }
+                
 			NSDictionary *doc = [theRow objectForKey:@"doc"];
 			if (doc)
 				{
 				CCouchDBDocument *theDocument = [[CCouchDBDocument alloc] initWithDatabase:_self];
 				[theDocument populateWithJSON:doc];
 
-				[theDocuments addObject:theDocument];
+				[viewRow setDoc:theDocument];
 				}
 			else
 				{
@@ -393,12 +410,14 @@
 				CCouchDBDocument *theDocument = [[CCouchDBDocument alloc] initWithDatabase:_self identifier:theIdentifier];
 				theDocument.revision = [theRow valueForKeyPath:@"value.rev"];
 
-				[theDocuments addObject:theDocument];
+				[viewRow setDoc:theDocument];
 				}
+            [theViewRows addObject:viewRow];
 			}
 
+        [theView setRows:theViewRows];
 		if (inSuccessHandler)
-			inSuccessHandler(theDocuments);
+			inSuccessHandler(theView);
 
         _self = NULL;
 		};
